@@ -178,6 +178,9 @@
 			},
 			"FormDesignVersionID": {
 				"type": "string"
+			},
+			"DocumentRuleID": {
+				"type": "string"
 			}
 		},
 		"annotations": [],

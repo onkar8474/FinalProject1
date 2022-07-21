@@ -171,6 +171,10 @@
 									"RequestType": {
 										"value": "@activity('Fetch Queued Record').output.value[0].Type",
 										"type": "Expression"
+									},
+									"DocumentRuleID": {
+										"value": "@activity('Fetch Queued Record').output.value[0].ExpressionRuleID",
+										"type": "Expression"
 									}
 								}
 							}

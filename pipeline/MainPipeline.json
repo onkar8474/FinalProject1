@@ -300,6 +300,9 @@
 			},
 			"RequestType": {
 				"type": "string"
+			},
+			"DocumentRuleID": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
