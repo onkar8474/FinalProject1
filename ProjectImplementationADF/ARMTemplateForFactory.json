@@ -779,7 +779,7 @@
 							"source": {
 								"type": "SqlServerSource",
 								"sqlReaderQuery": {
-									"value": "@concat('select * from ui.DocumentRule where FormDesignID = ',pipeline().parameters.FormDesignID,'and FormDesignVersionID = ',pipeline().parameters.FormDesignVersionID,' and DocumentRuleID = ',pipeline().parameters.DocumentRuleID)",
+									"value": "@concat('select * from ui.DocumentRule where FormDesignID = ',pipeline().parameters.FormDesignID,' and FormDesignVersionID = ',pipeline().parameters.FormDesignVersionID,' and DocumentRuleID = ',pipeline().parameters.DocumentRuleID)",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -1142,6 +1142,10 @@
 													},
 													"FormDesignVersionID": {
 														"value": "@pipeline().parameters.FormDesignVersionID",
+														"type": "Expression"
+													},
+													"DocumentRuleID": {
+														"value": "@pipeline().parameters.DocumentRuleID",
 														"type": "Expression"
 													}
 												}
