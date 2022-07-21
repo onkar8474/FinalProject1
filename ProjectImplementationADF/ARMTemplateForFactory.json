@@ -779,7 +779,7 @@
 							"source": {
 								"type": "SqlServerSource",
 								"sqlReaderQuery": {
-									"value": "@concat('select * from ui.DocumentRule where FormDesignID = ',pipeline().parameters.FormDesignID,'and FormDesignVersionID = ',pipeline().parameters.FormDesignVersionID)",
+									"value": "@concat('select * from ui.DocumentRule where FormDesignID = ',pipeline().parameters.FormDesignID,'and FormDesignVersionID = ',pipeline().parameters.FormDesignVersionID,' and DocumentRuleID = ',pipeline().parameters.DocumentRuleID)",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -862,7 +862,7 @@
 							"source": {
 								"type": "SqlServerSource",
 								"sqlReaderQuery": {
-									"value": "@concat('select * from [UI].DocumentRuleEventMap where DocumentRuleID in (select DocumentRuleID from [UI].DocumentRule where FormDesignID = ',pipeline().parameters.FormDesignID,'and FormDesignVersionID = ',pipeline().parameters.FormDesignVersionID,')')",
+									"value": "@concat('select * from [UI].DocumentRuleEventMap where DocumentRuleID in (select DocumentRuleID from [UI].DocumentRule where FormDesignID = ',pipeline().parameters.FormDesignID,'and FormDesignVersionID = ',pipeline().parameters.FormDesignVersionID,')',' and DocumentRuleID = ',pipeline().parameters.DocumentRuleID)",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -944,6 +944,9 @@
 						"type": "string"
 					},
 					"FormDesignVersionID": {
+						"type": "string"
+					},
+					"DocumentRuleID": {
 						"type": "string"
 					}
 				},
@@ -1263,6 +1266,9 @@
 					},
 					"RequestType": {
 						"type": "string"
+					},
+					"DocumentRuleID": {
+						"type": "string"
 					}
 				},
 				"annotations": [],
@@ -1452,6 +1458,10 @@
 											},
 											"RequestType": {
 												"value": "@activity('Fetch Queued Record').output.value[0].Type",
+												"type": "Expression"
+											},
+											"DocumentRuleID": {
+												"value": "@activity('Fetch Queued Record').output.value[0].ExpressionRuleID",
 												"type": "Expression"
 											}
 										}
