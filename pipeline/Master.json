@@ -102,6 +102,15 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderStoredProcedureName": "[UI].[SyncGetClientCredentials]",
+									"storedProcedureParameters": {
+										"TID": {
+											"type": "Int32",
+											"value": {
+												"value": "@activity('Fetch Queued Record').output.value[0].TenantID",
+												"type": "Expression"
+											}
+										}
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
