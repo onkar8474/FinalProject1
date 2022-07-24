@@ -109,7 +109,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "Set Identity_insert ui.FormDesignGroupMapping on\n\nALTER TABLE [UI].[FormDesignGroupMapping]\n\tADD CONSTRAINT\tFK_FormDesignGroupMapping_FormDesignGroupMapping FOREIGN KEY(FormID)\n\tREFERENCES\t\tUI.FormDesign(FormID)\nGO\n\nALTER TABLE [UI].[FormDesignGroupMapping]\n\tADD CONSTRAINT\tFK_FormDesignGroupMapping_FormDesignGroup\t\t FOREIGN KEY(FormDesignGroupID)\n\tREFERENCES\t\tUI.FormDesignGroup(FormDesignGroupID)\nGO",
+						"preCopyScript": "Set Identity_insert ui.FormDesignGroupMapping on\n\nALTER TABLE [UI].[FormDesignGroupMapping]\n\tADD CONSTRAINT\tFK_FormDesignGroupMapping_FormDesignGroupMapping FOREIGN KEY(FormID)\n\tREFERENCES\t\tUI.FormDesign(FormID)\nGO\n\n",
 						"writeBehavior": "upsert",
 						"upsertSettings": {
 							"useTempDB": true,
