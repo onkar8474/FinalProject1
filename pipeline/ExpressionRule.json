@@ -26,6 +26,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "Set Identity_insert ui.DocumentRule on",
 						"writeBehavior": "upsert",
 						"upsertSettings": {
 							"useTempDB": true,
@@ -108,6 +109,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "Set Identity_insert ui.DocumentRuleEventMap on",
 						"writeBehavior": "upsert",
 						"upsertSettings": {
 							"useTempDB": true,
