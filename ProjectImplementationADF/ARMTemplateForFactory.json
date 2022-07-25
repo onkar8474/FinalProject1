@@ -1168,7 +1168,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "If Condition1",
+								"activity": "Check For IsMasterList",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1208,7 +1208,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "If Condition1",
+								"activity": "Check For IsMasterList",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1249,7 +1249,7 @@
 						}
 					},
 					{
-						"name": "If Condition1",
+						"name": "Check For IsMasterList",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
@@ -1291,7 +1291,11 @@
 													}
 												},
 												"IsMasterList": {
-													"type": "Int32"
+													"type": "Int32",
+													"value": {
+														"value": "@concat('select IsMasterList from ui.FormDesign where formid = ',pipeline().parameters.FormDesignID)",
+														"type": "Expression"
+													}
 												},
 												"SQLOutput": {
 													"type": "String"
@@ -1304,7 +1308,8 @@
 											"referenceName": "Source_SqlServerTableDS",
 											"type": "DatasetReference",
 											"parameters": {}
-										}
+										},
+										"firstRowOnly": false
 									}
 								}
 							]
