@@ -142,7 +142,7 @@
 							},
 							"sink": {
 								"type": "SqlServerSink",
-								"preCopyScript": "Set Identity_insert ui.FormDesignGroupMapping on\n\nALTER TABLE [UI].[FormDesignGroupMapping]\nDROP CONSTRAINT FK_FormDesignGroupMapping_FormDesignGroup;\n\nALTER TABLE [UI].[FormDesignGroupMapping]\nDROP CONSTRAINT FK_FormDesignGroupMapping_FormDesignGroupMapping;",
+								"preCopyScript": "Set Identity_insert ui.FormDesignGroupMapping on\n\nALTER TABLE [UI].[FormDesignGroupMapping]\ndrop constraint FK_FormDesignGroupMapping_FormDesignGroupMapping\n\nALTER TABLE [UI].[FormDesignGroupMapping]\ndrop constraint FK_FormDesignGroupMapping_FormDesignGroup",
 								"writeBehavior": "upsert",
 								"upsertSettings": {
 									"useTempDB": true,
@@ -226,6 +226,7 @@
 							},
 							"sink": {
 								"type": "SqlServerSink",
+								"preCopyScript": "Set Identity_insert ui.FormDesignGroup on\n\n",
 								"writeBehavior": "upsert",
 								"upsertSettings": {
 									"useTempDB": true,
@@ -1307,7 +1308,7 @@
 						"typeProperties": {
 							"source": {
 								"type": "SqlServerSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[SyncNextQueued]",
+								"sqlReaderStoredProcedureName": "[[UI].[SyncNextQueued]",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
