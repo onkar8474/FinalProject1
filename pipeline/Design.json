@@ -272,6 +272,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "Set Identity_insert ui.FormDesignType on",
 						"writeBehavior": "upsert",
 						"upsertSettings": {
 							"useTempDB": true,
