@@ -338,7 +338,8 @@
 								"dataset": {
 									"referenceName": "Source_SqlServerTableDS",
 									"type": "DatasetReference"
-								}
+								},
+								"firstRowOnly": false
 							}
 						}
 					]
