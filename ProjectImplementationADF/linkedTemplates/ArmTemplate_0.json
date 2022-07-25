@@ -1483,7 +1483,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "RequestType",
+								"activity": "If Condition1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1523,7 +1523,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "RequestType",
+								"activity": "If Condition1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1561,6 +1561,68 @@
 									"type": "Expression"
 								}
 							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "RequestType",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(concat('select IsMasterList from ui.FormDesign where formid = ',pipeline().parameters.FormDesignID), 1)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Lookup1",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[FolderCopyADF]",
+											"storedProcedureParameters": {
+												"FolderID": {
+													"type": "Int32",
+													"value": {
+														"value": "@pipeline().parameters.FormDesignID",
+														"type": "Expression"
+													}
+												},
+												"IsMasterList": {
+													"type": "Int32"
+												},
+												"SQLOutput": {
+													"type": "String"
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "Source_SqlServerTableDS",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								}
+							]
 						}
 					}
 				],
@@ -1603,6 +1665,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SourceSqlServerLS')]",
 				"[concat(variables('factoryId'), '/linkedServices/Target_SqlServerLS')]",
+				"[concat(variables('factoryId'), '/datasets/Source_SqlServerTableDS')]",
 				"[concat(variables('factoryId'), '/pipelines/Design')]",
 				"[concat(variables('factoryId'), '/pipelines/DesignVersion')]",
 				"[concat(variables('factoryId'), '/pipelines/ExpressionRule')]"
