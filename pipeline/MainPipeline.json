@@ -298,7 +298,7 @@
 					},
 					"ifTrueActivities": [
 						{
-							"name": "Lookup1",
+							"name": "folder copy",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -341,22 +341,6 @@
 								},
 								"firstRowOnly": false
 							}
-						},
-						{
-							"name": "Copy data1",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"enableStaging": false
-							}
 						}
 					]
 				}
@@ -389,6 +373,11 @@
 			},
 			"DocumentRuleID": {
 				"type": "string"
+			}
+		},
+		"variables": {
+			"output": {
+				"type": "String"
 			}
 		},
 		"annotations": [],
