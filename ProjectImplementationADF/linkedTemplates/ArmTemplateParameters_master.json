@@ -11,6 +11,9 @@
 		"Target_SqlServerLS_connectionString": {
 			"value": ""
 		},
+		"AzureSqlDatabaseLS_connectionString": {
+			"value": ""
+		},
 		"IRFinalProject_properties_typeProperties_linkedInfo_resourceId": {
 			"value": "/subscriptions/9ebde10a-058f-4892-8970-ba5813eb74e5/resourcegroups/demoresource/providers/Microsoft.DataFactory/factories/datafactorymainpro/integrationruntimes/integrationRuntimemain"
 		},

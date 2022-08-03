@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ProjectImplementationADF"
 		},
+		"AzureSqlDatabaseLS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLS'"
+		},
 		"SourceSqlServerLS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SourceSqlServerLS'"
@@ -54,6 +58,19 @@
 						"resourceId": "[parameters('SelfHostedIR_properties_typeProperties_linkedInfo_resourceId')]",
 						"authorizationType": "Rbac"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabaseLS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabaseLS_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -112,6 +129,27 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/IRFinalProject')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabaseLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SqlQuery"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabaseLS')]"
 			]
 		},
 		{
@@ -334,10 +372,7 @@
 				"annotations": [],
 				"type": "SqlServerTable",
 				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "DesignSyncProcessQueue"
-				}
+				"typeProperties": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SourceSqlServerLS')]"
@@ -1582,9 +1617,49 @@
 							},
 							"ifTrueActivities": [
 								{
-									"name": "Lookup1",
-									"type": "Lookup",
+									"name": "Stored procedure for FolderCopy",
+									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[FolderCopyProc]",
+										"storedProcedureParameters": {
+											"FolderID": {
+												"value": {
+													"value": "@concat('select FolderID from fldr.folder where Name = (select FormName from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID)",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"IsMasterList": {
+												"value": "1",
+												"type": "Boolean"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SourceSqlServerLS",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Copy data to Azure DB",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Stored procedure for FolderCopy",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "7.00:00:00",
 										"retry": 0,
@@ -1596,31 +1671,70 @@
 									"typeProperties": {
 										"source": {
 											"type": "SqlServerSource",
-											"sqlReaderStoredProcedureName": "[[dbo].[FolderCopyADF]",
-											"storedProcedureParameters": {
-												"FolderID": {
-													"type": "Int32",
-													"value": {
-														"value": "@pipeline().parameters.FormDesignID",
-														"type": "Expression"
-													}
-												},
-												"IsMasterList": {
-													"type": "Int32",
-													"value": {
-														"value": "@concat('select IsMasterList from ui.FormDesign where formid = ',pipeline().parameters.FormDesignID)",
-														"type": "Expression"
-													}
-												},
-												"SQLOutput": {
-													"type": "String"
-												}
-											},
+											"sqlReaderQuery": "SELECT ID, SqlQuery FROM [Temp].[FolderQuery] order by ID",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"preCopyScript": "delete [dbo].[SqlQuery]\n",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "Source_SqlServerTableDS",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "AzureSqlTable",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Concatenating Queries",
+									"type": "Lookup",
+									"dependsOn": [
+										{
+											"activity": "Copy data to Azure DB",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": "SELECT STRING_AGG(CONVERT(NVARCHAR(MAX), ISNULL(SqlQuery,' ')),' ') within group(order by ID asc)  AS SqlQuery FROM [dbo].[SqlQuery]",
 											"queryTimeout": "02:00:00",
 											"partitionOption": "None"
 										},
 										"dataset": {
-											"referenceName": "Source_SqlServerTableDS",
+											"referenceName": "AzureSqlTable",
 											"type": "DatasetReference",
 											"parameters": {}
 										},
@@ -1664,6 +1778,11 @@
 						"type": "string"
 					}
 				},
+				"variables": {
+					"output": {
+						"type": "String"
+					}
+				},
 				"annotations": [],
 				"lastPublishTime": "2022-07-18T08:00:20Z"
 			},
@@ -1671,6 +1790,7 @@
 				"[concat(variables('factoryId'), '/linkedServices/SourceSqlServerLS')]",
 				"[concat(variables('factoryId'), '/linkedServices/Target_SqlServerLS')]",
 				"[concat(variables('factoryId'), '/datasets/Source_SqlServerTableDS')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable')]",
 				"[concat(variables('factoryId'), '/pipelines/Design')]",
 				"[concat(variables('factoryId'), '/pipelines/DesignVersion')]",
 				"[concat(variables('factoryId'), '/pipelines/ExpressionRule')]"
