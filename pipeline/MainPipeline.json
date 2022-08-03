@@ -293,7 +293,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(activity('Script1').output.value[0].IsMasterList,1)",
+						"value": "@equals(activity('Script1').output.resultSets[0].IsMasterList,1)",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [
