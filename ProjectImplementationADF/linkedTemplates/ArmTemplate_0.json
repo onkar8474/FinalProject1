@@ -33,6 +33,19 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabaseLS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabaseLS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/IRFinalProject')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -63,17 +76,25 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabaseLS')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabaseLS",
+					"type": "LinkedServiceReference"
+				},
 				"annotations": [],
-				"type": "AzureSqlDatabase",
+				"type": "AzureSqlTable",
+				"schema": [],
 				"typeProperties": {
-					"connectionString": "[parameters('AzureSqlDatabaseLS_connectionString')]"
+					"schema": "dbo",
+					"table": "SqlQuery"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabaseLS')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SourceSqlServerLS')]",
@@ -129,27 +150,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/IRFinalProject')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabaseLS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SqlQuery"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabaseLS')]"
 			]
 		},
 		{
@@ -1603,7 +1603,7 @@
 						"type": "IfCondition",
 						"dependsOn": [
 							{
-								"activity": "RequestType",
+								"activity": "Script1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1612,7 +1612,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@equals(concat('select IsMasterList from ui.FormDesign where formid = ',pipeline().parameters.FormDesignID), 1)",
+								"value": "@equals(activity('Script1').output.value[0].IsMasterList,1)",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
@@ -1739,6 +1739,41 @@
 											"parameters": {}
 										},
 										"firstRowOnly": false
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Script1",
+						"type": "Script",
+						"dependsOn": [
+							{
+								"activity": "RequestType",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "SourceSqlServerLS",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": {
+										"value": "@concat('select IsMasterList from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID)",
+										"type": "Expression"
 									}
 								}
 							]

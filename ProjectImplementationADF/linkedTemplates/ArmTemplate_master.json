@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ProjectImplementationADF"
 		},
+		"AzureSqlDatabaseLS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLS'"
+		},
 		"SourceSqlServerLS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SourceSqlServerLS'"
@@ -14,10 +18,6 @@
 		"Target_SqlServerLS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Target_SqlServerLS'"
-		},
-		"AzureSqlDatabaseLS_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLS'"
 		},
 		"IRFinalProject_properties_typeProperties_linkedInfo_resourceId": {
 			"type": "string",

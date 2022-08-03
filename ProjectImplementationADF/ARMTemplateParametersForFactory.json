@@ -5,13 +5,13 @@
 		"factoryName": {
 			"value": "ProjectImplementationADF"
 		},
+		"AzureSqlDatabaseLS_connectionString": {
+			"value": ""
+		},
 		"SourceSqlServerLS_connectionString": {
 			"value": ""
 		},
 		"Target_SqlServerLS_connectionString": {
-			"value": ""
-		},
-		"AzureSqlDatabaseLS_connectionString": {
 			"value": ""
 		},
 		"IRFinalProject_properties_typeProperties_linkedInfo_resourceId": {
