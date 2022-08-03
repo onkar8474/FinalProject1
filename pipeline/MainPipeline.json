@@ -298,9 +298,49 @@
 					},
 					"ifTrueActivities": [
 						{
-							"name": "folder copy",
-							"type": "Lookup",
+							"name": "Stored procedure for FolderCopy",
+							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[FolderCopyProc]",
+								"storedProcedureParameters": {
+									"FolderID": {
+										"value": {
+											"value": "@concat('select FolderID from fldr.folder where Name = (select FormName from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID)",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"IsMasterList": {
+										"value": "1",
+										"type": "Boolean"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SourceSqlServerLS",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Copy data to Azure DB",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Stored procedure for FolderCopy",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -312,31 +352,68 @@
 							"typeProperties": {
 								"source": {
 									"type": "SqlServerSource",
-									"sqlReaderStoredProcedureName": "[dbo].[FolderCopyADF]",
-									"storedProcedureParameters": {
-										"FolderID": {
-											"type": "Int32",
-											"value": {
-												"value": "@pipeline().parameters.FormDesignID",
-												"type": "Expression"
-											}
-										},
-										"IsMasterList": {
-											"type": "Int32",
-											"value": {
-												"value": "@concat('select IsMasterList from ui.FormDesign where formid = ',pipeline().parameters.FormDesignID)",
-												"type": "Expression"
-											}
-										},
-										"SQLOutput": {
-											"type": "String"
-										}
-									},
+									"sqlReaderQuery": "SELECT ID, SqlQuery FROM [Temp].[FolderQuery] order by ID",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"preCopyScript": "delete [dbo].[SqlQuery]\n",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Source_SqlServerTableDS",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureSqlTable",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "Concatenating Queries",
+							"type": "Lookup",
+							"dependsOn": [
+								{
+									"activity": "Copy data to Azure DB",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": "SELECT STRING_AGG(CONVERT(NVARCHAR(MAX), ISNULL(SqlQuery,' ')),' ') within group(order by ID asc)  AS SqlQuery FROM [dbo].[SqlQuery]",
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
 								"dataset": {
-									"referenceName": "Source_SqlServerTableDS",
+									"referenceName": "AzureSqlTable",
 									"type": "DatasetReference"
 								},
 								"firstRowOnly": false
