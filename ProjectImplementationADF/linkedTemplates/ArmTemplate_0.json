@@ -1612,7 +1612,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@equals(activity('Script1').output.resultSets[0].rows[0],'true')",
+								"value": "@activity('Script1').output.resultSets[0].rows[0].IsMasterList",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
@@ -1633,14 +1633,14 @@
 										"storedProcedureParameters": {
 											"FolderID": {
 												"value": {
-													"value": "@concat('select FolderID from fldr.folder where Name = (select FormName from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID)",
+													"value": "@concat('select FolderID from fldr.folder where Name = (select FormName from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID,')')",
 													"type": "Expression"
 												},
 												"type": "Int32"
 											},
 											"IsMasterList": {
 												"value": "1",
-												"type": "Boolean"
+												"type": "Int32"
 											}
 										}
 									},
