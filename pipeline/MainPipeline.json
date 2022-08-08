@@ -284,7 +284,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Script1",
+						"activity": "To check IsMasterList",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -293,7 +293,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@activity('Script1').output.resultSets[0].rows[0].IsMasterList",
+						"value": "@activity('To check IsMasterList').output.resultSets[0].rows[0].IsMasterList",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [
@@ -458,7 +458,7 @@
 				}
 			},
 			{
-				"name": "Script1",
+				"name": "To check IsMasterList",
 				"type": "Script",
 				"dependsOn": [
 					{
