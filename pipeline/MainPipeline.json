@@ -284,7 +284,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "To check IsMasterList",
+						"activity": "To check IsMasterList And New Design",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -458,7 +458,7 @@
 				}
 			},
 			{
-				"name": "To check IsMasterList",
+				"name": "To check IsMasterList And New Design",
 				"type": "Script",
 				"dependsOn": [
 					{
