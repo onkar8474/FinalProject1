@@ -1257,7 +1257,7 @@
 						"type": "IfCondition",
 						"dependsOn": [
 							{
-								"activity": "To check IsMasterList",
+								"activity": "To check IsMasterList And New Design",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1266,7 +1266,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@activity('To check IsMasterList').output.resultSets[0].rows[0].IsMasterList",
+								"value": "@activity('To check IsMasterList And New Design').output.resultSets[0].rows[0].IsMasterList",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
@@ -1434,7 +1434,7 @@
 						}
 					},
 					{
-						"name": "To check IsMasterList",
+						"name": "To check IsMasterList And New Design",
 						"type": "Script",
 						"dependsOn": [
 							{
