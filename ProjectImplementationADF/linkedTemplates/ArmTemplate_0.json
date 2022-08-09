@@ -1621,7 +1621,7 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "Script2",
+											"activity": "Get FolderID",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -1640,7 +1640,7 @@
 										"storedProcedureParameters": {
 											"FolderID": {
 												"value": {
-													"value": "@activity('Script2').output.resultSets[0].rows[0].FolderID",
+													"value": "@activity('Get FolderID').output.resultSets[0].rows[0].FolderID",
 													"type": "Expression"
 												},
 												"type": "Int32"
@@ -1657,7 +1657,35 @@
 									}
 								},
 								{
-									"name": "Copy data to Azure DB",
+									"name": "Get FolderID",
+									"type": "Script",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"linkedServiceName": {
+										"referenceName": "SourceSqlServerLS",
+										"type": "LinkedServiceReference"
+									},
+									"typeProperties": {
+										"scripts": [
+											{
+												"type": "Query",
+												"text": {
+													"value": "@concat('select FolderID from fldr.folder where Name = (select FormName from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID,')')",
+													"type": "Expression"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "Copy data To ClientAzure",
 									"type": "Copy",
 									"dependsOn": [
 										{
@@ -1684,7 +1712,7 @@
 										},
 										"sink": {
 											"type": "AzureSqlSink",
-											"preCopyScript": "delete [dbo].[SqlQuery]\n",
+											"preCopyScript": "delete dbo.SqlQuery",
 											"writeBehavior": "insert",
 											"sqlWriterUseTableLock": false,
 											"disableMetricsCollection": false
@@ -1715,11 +1743,11 @@
 									]
 								},
 								{
-									"name": "Concatenating Queries",
+									"name": "To ExecuteQuery",
 									"type": "Lookup",
 									"dependsOn": [
 										{
-											"activity": "Copy data to Azure DB",
+											"activity": "Copy data To ClientAzure",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -1736,7 +1764,7 @@
 									"typeProperties": {
 										"source": {
 											"type": "AzureSqlSource",
-											"sqlReaderQuery": "SELECT STRING_AGG(CONVERT(NVARCHAR(MAX), ISNULL(SqlQuery,' ')),' ') within group(order by ID asc)  AS SqlQuery FROM [dbo].[SqlQuery]",
+											"sqlReaderStoredProcedureName": "[[dbo].[ExecSql]",
 											"queryTimeout": "02:00:00",
 											"partitionOption": "None"
 										},
@@ -1746,34 +1774,6 @@
 											"parameters": {}
 										},
 										"firstRowOnly": false
-									}
-								},
-								{
-									"name": "Script2",
-									"type": "Script",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"linkedServiceName": {
-										"referenceName": "SourceSqlServerLS",
-										"type": "LinkedServiceReference"
-									},
-									"typeProperties": {
-										"scripts": [
-											{
-												"type": "Query",
-												"text": {
-													"value": "@concat('select FolderID from fldr.folder where Name = (select FormName from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID,')')",
-													"type": "Expression"
-												}
-											}
-										]
 									}
 								}
 							]
