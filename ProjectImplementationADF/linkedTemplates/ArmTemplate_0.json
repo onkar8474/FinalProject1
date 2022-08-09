@@ -1612,7 +1612,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@activity('To check IsMasterList And New Design').output.resultSets[0].rows[0].IsMasterList",
+								"value": "@and(activity('To check IsMasterList And New Design').output.resultSets[0].rows[0].IsMasterList,equals(pipeline().parameters.RequestType,'Entire Design'))",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
@@ -1807,7 +1807,7 @@
 								{
 									"type": "Query",
 									"text": {
-										"value": "@activity('RequestType').outputand((concat('select IsMasterList from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID,pipeline().parameters.RequestType,' = Entire Design')",
+										"value": "@concat('select IsMasterList from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID)",
 										"type": "Expression"
 									}
 								}
