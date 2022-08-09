@@ -485,7 +485,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "@concat('select IsMasterList from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID)",
+								"value": "@concat('select IsMasterList from ui.formdesign where FormID = ',pipeline().parameters.FormDesignID,' and ',activity('RequestType').output,' = Entire Design')",
 								"type": "Expression"
 							}
 						}
