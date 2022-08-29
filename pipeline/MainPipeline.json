@@ -393,6 +393,7 @@
 								},
 								"sink": {
 									"type": "SqlServerSink",
+									"preCopyScript": "delete dbo.Query",
 									"writeBehavior": "insert",
 									"sqlWriterUseTableLock": false
 								},
