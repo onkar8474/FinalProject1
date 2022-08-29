@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Target_SqlServerLS'"
 		},
+		"sqlqueryls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'sqlqueryls'"
+		},
 		"IRFinalProject_properties_typeProperties_linkedInfo_resourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/9ebde10a-058f-4892-8970-ba5813eb74e5/resourcegroups/demoresource/providers/Microsoft.DataFactory/factories/datafactorymainpro/integrationruntimes/integrationRuntimemain"
@@ -142,6 +146,25 @@
 				"type": "SqlServer",
 				"typeProperties": {
 					"connectionString": "[parameters('Target_SqlServerLS_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "IRFinalProject",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/IRFinalProject')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sqlqueryls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('sqlqueryls_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "IRFinalProject",
@@ -376,6 +399,37 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SourceSqlServerLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Execquerytoclient')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sqlqueryls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SqlSqery",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Query"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sqlqueryls')]"
 			]
 		},
 		{
@@ -1711,11 +1765,9 @@
 											"partitionOption": "None"
 										},
 										"sink": {
-											"type": "AzureSqlSink",
-											"preCopyScript": "delete dbo.SqlQuery",
+											"type": "SqlServerSink",
 											"writeBehavior": "insert",
-											"sqlWriterUseTableLock": false,
-											"disableMetricsCollection": false
+											"sqlWriterUseTableLock": false
 										},
 										"enableStaging": false,
 										"translator": {
@@ -1736,7 +1788,7 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "AzureSqlTable",
+											"referenceName": "Execquerytoclient",
 											"type": "DatasetReference",
 											"parameters": {}
 										}
@@ -1860,6 +1912,7 @@
 				"[concat(variables('factoryId'), '/linkedServices/SourceSqlServerLS')]",
 				"[concat(variables('factoryId'), '/linkedServices/Target_SqlServerLS')]",
 				"[concat(variables('factoryId'), '/datasets/Source_SqlServerTableDS')]",
+				"[concat(variables('factoryId'), '/datasets/Execquerytoclient')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable')]",
 				"[concat(variables('factoryId'), '/pipelines/Design')]",
 				"[concat(variables('factoryId'), '/pipelines/DesignVersion')]",

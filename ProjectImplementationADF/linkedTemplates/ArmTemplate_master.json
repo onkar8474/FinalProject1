@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Target_SqlServerLS'"
 		},
+		"sqlqueryls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'sqlqueryls'"
+		},
 		"IRFinalProject_properties_typeProperties_linkedInfo_resourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/9ebde10a-058f-4892-8970-ba5813eb74e5/resourcegroups/demoresource/providers/Microsoft.DataFactory/factories/datafactorymainpro/integrationruntimes/integrationRuntimemain"
@@ -62,6 +66,9 @@
 					},
 					"Target_SqlServerLS_connectionString": {
 						"value": "[parameters('Target_SqlServerLS_connectionString')]"
+					},
+					"sqlqueryls_connectionString": {
+						"value": "[parameters('sqlqueryls_connectionString')]"
 					},
 					"IRFinalProject_properties_typeProperties_linkedInfo_resourceId": {
 						"value": "[parameters('IRFinalProject_properties_typeProperties_linkedInfo_resourceId')]"
