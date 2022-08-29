@@ -1,0 +1,26 @@
+{
+	"name": "Execquerytoclient",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqlqueryls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SqlSqery",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Query"
+		}
+	}
+}

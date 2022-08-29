@@ -392,11 +392,9 @@
 									"partitionOption": "None"
 								},
 								"sink": {
-									"type": "AzureSqlSink",
-									"preCopyScript": "delete dbo.SqlQuery",
+									"type": "SqlServerSink",
 									"writeBehavior": "insert",
-									"sqlWriterUseTableLock": false,
-									"disableMetricsCollection": false
+									"sqlWriterUseTableLock": false
 								},
 								"enableStaging": false,
 								"translator": {
@@ -416,7 +414,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "AzureSqlTable",
+									"referenceName": "Execquerytoclient",
 									"type": "DatasetReference"
 								}
 							]
