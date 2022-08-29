@@ -2041,7 +2041,7 @@
 												"type": "Expression"
 											},
 											"RequestType": {
-												"value": "@activity('Fetch Queued Record').output.value[0].Type",
+												"value": "@activity('Fetch Queued Record').output.value[0].DesignType",
 												"type": "Expression"
 											},
 											"DocumentRuleID": {
